@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "raycasting.h": "c",
+        "math.h": "c",
+        "stdlib.h": "c"
+    }
+}
