@@ -7,7 +7,7 @@
 
 void mainloop();
 
-void init_event(event *e);
+event* init_event();
 void event_update(event *e,int etat);
 void event_handling(event* e,graphic *G,player *p,int tab[][N]);
 

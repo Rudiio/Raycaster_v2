@@ -1,10 +1,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <math.h>
 
 #include "Graphic.h"
 
 /*-------------------------------- INITIALISATION -----------------------------------*/
+graphic *init_graphic()
+{
+    /*initialise la structure graphic */
+
+    graphic *G =(graphic*)malloc(sizeof(graphic));
+    G->renderer=NULL;
+    G->renderer=NULL;
+
+    return G;
+}
 
 void init(graphic *G)
 {
@@ -38,7 +50,7 @@ void init(graphic *G)
     //Coloriage du fond
 	SDL_SetRenderDrawColor(G->renderer, 255, 255, 255, 255); 
 	SDL_RenderClear(G->renderer);
-    SDL_RenderPresent(G->renderer);
+    // SDL_RenderPresent(G->renderer);
 }
 
 /* ------------------------------ AFFICHAGE DU JEU ----------------------------------*/
@@ -46,18 +58,12 @@ void init(graphic *G)
 void affiche_case(int x,int y,int tab[][N],graphic *G)
 {
     /* Affiche un élément du décor en 2D sous la forme d'un carré */
-    SDL_Rect rect = {DX + x*CASE_SIZE/map_scale,DY + y*CASE_SIZE/map_scale,CASE_SIZE/map_scale,CASE_SIZE/map_scale};
+    SDL_Rect rect = {DX + x*CASE_SIZE/map_scale,DY + y*CASE_SIZE/map_scale,CASE_SIZE/map_scale+1,CASE_SIZE/map_scale+1};
 
     //Affichage d'un mur
     if(tab[y][x]==1){
         SDL_SetRenderDrawColor(G->renderer,0,0,0,255);
         SDL_RenderFillRect(G->renderer,&rect);
-    }
-
-    //Affichage d'une case vide
-    if(tab[y][x]==0){
-        SDL_SetRenderDrawColor(G->renderer,0,0,0,255);
-        SDL_RenderDrawRect(G->renderer,&rect);
     }
 }
 
@@ -81,6 +87,7 @@ void Dessine_joueur(player *p,graphic *G)
     SDL_SetRenderDrawColor(G->renderer,255,215,0,255);
     SDL_RenderFillRect(G->renderer,&rect);
     SDL_RenderFillRect(G->renderer,&rect2);
+    SDL_RenderDrawLine(G->renderer,(int)p->x/map_scale,(int)p->y/map_scale,(int)(50*cos(p->angle)+ p->x)/map_scale,(int)(50*sin(p->angle) + p->y)/map_scale);
 
 }
 
@@ -91,6 +98,16 @@ void Dessine_colonne(graphic *G,int pos,int he,int l)
     SDL_Rect Rect = {pos*LARGEUR, CENTRE - he/2,l+1,he};
     // SDL_Rect Rect = {pos*LARGEUR + (N+1)*CASE_SIZE, CENTRE - he/2,l+1,he};
     SDL_RenderFillRect(G->renderer,&Rect);
+}
+
+void Dessine_colonne_texture(graphic *G,textures* T,int decalage,int pos,int he,int l)
+{
+    /* Dessine une colonne de mur texturée */
+    // int large = l;
+    // printf("decalage = %d\n",large*large/CASE_SIZE);
+    SDL_Rect On_texture = {decalage*l/Texture_scale,0,l/Texture_scale,CASE_SIZE };
+    SDL_Rect On_render = {pos*l, CENTRE - he/2,l+1,he};
+    SDL_RenderCopy(G->renderer, T->Wall,&On_texture, &On_render);
 }
 
 /* -----------------------RAFFRAICHISSEMENT DE L'AFFICHAGE -------------------- */
@@ -107,7 +124,6 @@ void Display(graphic *G)
 {
     /* Met à jour l'affichage */
     SDL_RenderPresent(G->renderer);
-
 }
 
 /* -------------------------------- LIBERATION ----------------------------------- */
@@ -118,5 +134,34 @@ void Free_graphic(graphic *G)
 
     SDL_DestroyRenderer(G->renderer);
     SDL_DestroyWindow(G->window);
+    free(G);
+}
 
+
+int charge_textures(textures *T,graphic *G)
+{
+    /* Charge les textures du jeu */
+
+    //Pour les murs
+    T->Wall = IMG_LoadTexture(G->renderer,"./textures/Wall.png");
+    if(T->Wall==NULL){
+        SDL_Log("ERREUR: Creation de tmp echouee > %s\n",SDL_GetError());
+	    exit(EXIT_FAILURE);
+    }   
+
+    // Pour le sol
+    // T->Floor = IMG_LoadTexture(G->renderer,"../textures/Floor.png");
+    // if(!T->Floor){
+    //     printf("Erreur lors du chargement de la texture du sol\n");
+    //     return 0;
+    // }
+
+    // //pour le plafond
+    // T->ceiling = IMG_LoadTexture(G->renderer,"../textures/ceiling.png");
+    // if(!T->ceiling){
+    //     printf("Erreur lors du chargement de la texture du plafond\n");
+    //     return 0;
+    // }
+    
+    return 1;
 }

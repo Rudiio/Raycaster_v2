@@ -25,8 +25,8 @@ void DOWN(player *p,int tab[][N]);
 int input(player *p,int tab[][N]);
 
 //Moteur du raycasting
-void raycasting(player *p,graphic *G, int tab[][N],int dist[]);
-int raydist(player *p,int tab[][N],int pos,float theta,graphic *G);
+void raycasting(player *p,graphic *G, int tab[][N],int dist[],textures *T);
+int raydist(player *p,int tab[][N],int pos,float theta,graphic *G,textures *T);
 
 //Fonctions Auxilliaires
 float angle_trigo(float angle);

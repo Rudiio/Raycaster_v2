@@ -1,6 +1,6 @@
 CC =gcc
 CFLAGS = -std=c11 -Wall -ggdb3
-LIBFLAGS = -lSDL2 -lSDL2main -lm
+LIBFLAGS = -lSDL2 -lSDL2main -lm -lSDL2_image
 EXEC = raycaster
 OBJ = Game.o Graphic.o main.o raycasting.o textures.o
 

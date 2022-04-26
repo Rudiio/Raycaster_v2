@@ -85,7 +85,7 @@ void DOWN(player *p,int tab[][N])
 
 /*---------------------------- RAYCASTING --------------------------*/
 
-void raycasting(player *p,graphic *G, int tab[][N],int dist[])
+void raycasting(player *p,graphic *G, int tab[][N],int dist[],textures *T)
 {
     /* Calcule les distances jusqu'aux murs et les stocke dans un tableau.
     Gère aussi l'affichage 3D */    
@@ -94,12 +94,12 @@ void raycasting(player *p,graphic *G, int tab[][N],int dist[])
     
     for(int i=0;i<NRAYS;i++){
         theta = angle_trigo(theta+d_angle); 
-        int d = raydist(p,tab,i,theta,G);     //Calcule de la distance et dessine les murs
+        int d = raydist(p,tab,i,theta,G,T);     //Calcule de la distance et dessine les murs
         dist[i] = d;
     }
 }
 
-int raydist(player *p,int tab[][N],int pos,float theta,graphic *G)
+int raydist(player *p,int tab[][N],int pos,float theta,graphic *G,textures *T)
 {
     /* Calcule la distance du joueur au prochain mur dans une certaine direcction */
 
@@ -195,32 +195,52 @@ int raydist(player *p,int tab[][N],int pos,float theta,graphic *G)
 
     float rh = sqrt((hx-p->x)*(hx-p->x) + (hy-p->y) * (hy-p->y)); //Distance horizontale
     float rv = sqrt((cx-p->x)*(cx-p->x) + (cy-p->y)*(cy-p->y)); //Distance verticale
-    
+    float x;
+    float y;
+    int decalage;
+
     //On renvoie la distance la plus courte
     if(rh < rv){    //distance horizontale
 
         SDL_SetRenderDrawColor(G->renderer, 0,255*0.5, 0, 255);     
         // SDL_RenderDrawLine(G->renderer,p->x,p->y,hx,hy);         //Affichage des rayons
-        
+
+
         rh *= cos(angle_trigo(theta -p->angle + PI/16));    //Correction du fisheye
         he = HM*DE/rh;
         l=LARGEUR; 
-        Dessine_colonne(G,pos,he,l);
-        return rh;
+
+        //Calculs de x et y
+        x = rh *cos(theta) + p->x;
+        y = rh *sin(theta) + p->y;
+
+        //décalage sur la texture
+        decalage =(int) x%CASE_SIZE;
+
+        // Dessine_colonne(G,pos,he,l);     //sans texture
+        Dessine_colonne_texture(G,T,decalage,pos,he,l); //Avec texture
+        return rh;  
     }
     
     //distance verticale
-
     SDL_SetRenderDrawColor(G->renderer, 0,200, 0, 255); 
 
     // SDL_RenderDrawLine(G->renderer,p->x,p->y,cx,cy);     //Affichage des rayons
-    
+
+
     rv *= cos(angle_trigo(theta - p->angle + PI/16));   //Correction du fisheye
     he = HM*DE/rv;
     l=LARGEUR;
 
-    Dessine_colonne(G,pos,he,l);
-    
+    //Calculs de x et y
+    x = rv *cos(theta) + p->x;
+    y = rv *sin(theta) + p->y;
+
+    //décalage sur la texture
+    decalage =(int) y%CASE_SIZE;
+
+    // Dessine_colonne(G,pos,he,l); //Sans texture
+    Dessine_colonne_texture(G,T,decalage,pos,he,l); //avec texture
     return rv;
 }
 
