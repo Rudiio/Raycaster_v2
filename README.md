@@ -9,7 +9,7 @@ Il s'agit d'une évolution de mon [premier moteur de raycasting](https://github.
 Les objectifs du projets sont les suivants :
 
 - [x] Mettre en place les calculs de distances optmisés (merci la trigo)
-- [x ] Afficher l'environnement 3D
+- [x] Afficher l'environnement 3D
 - [ ] Gérer la minimap
 - [ ] Texturer les murs
 - [ ] Textures le sol
