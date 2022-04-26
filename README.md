@@ -5,7 +5,6 @@ Le moteur 3D est basé sur la technique du raycasting qui permet d'afficher un e
 <br>
 Il s'agit d'une évolution de mon [premier moteur de raycasting](https://github.com/Rudiio/Raycaster.git) qui permettait un affichage 3D sans optimisation.
 
-<br>
 
 ### Les objectifs du projets sont les suivants :
 
