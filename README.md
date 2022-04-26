@@ -19,7 +19,8 @@ Il s'agit d'une évolution de mon [premier moteur de raycasting](https://github.
 - [ ] Textures le sol
 - [ ] Texturer le plafond
 - [ ] Afficher des sprites
-
+- [ ] Créer une nouvelle map
+ 
 
 ## Dependencies
 
@@ -44,3 +45,13 @@ sudo apt install libsdl2-2.0-0 libsdl2-gfx-1.0-0 libsdl2-image-2.0-0 libsdl2-mix
 
 ### Avec la texture de Wolfenstein
 ![actual_state](./states/state3.png)
+
+## Commandes 
+
+- **M** : Afficher/Cacher la minimap
+- **← → ↑ ↓** : Pour se déplacer
+- **ESC** : Pour quitter
+
+## A corriger
+
+- Erreurs valgrind lors de l'affichage de la mini-map (semble provenir de la modification du rendu) 
