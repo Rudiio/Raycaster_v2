@@ -1,12 +1,16 @@
 # Raycaster_v2
 
+[![Linux](https://svgshare.com/i/Zhy.svg)](https://svgshare.com/i/Zhy.svg)
+![C](https://img.shields.io/badge/language-C-blue)
+![library](https://img.shields.io/badge/Library-SDL-red)
+
 Ce projet consiste à mettre en place un moteur de jeu inspiré par Wolfenstein 3d et DOOM.
 Le moteur 3D est basé sur la technique du raycasting qui permet d'afficher un environnement 3D à partir d'affichage 2D.
 <br>
 Il s'agit d'une évolution de mon [premier moteur de raycasting](https://github.com/Rudiio/Raycaster.git) qui permettait un affichage 3D sans optimisation.
 
 
-### Les objectifs du projets sont les suivants :
+## Objectifs
 
 - [x] Mettre en place les calculs de distances optmisés (merci la trigo)
 - [x] Afficher l'environnement 3D
