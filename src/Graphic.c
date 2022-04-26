@@ -46,7 +46,7 @@ void init(graphic *G)
 void affiche_case(int x,int y,int tab[][N],graphic *G)
 {
     /* Affiche un élément du décor en 2D sous la forme d'un carré */
-    SDL_Rect rect = {DX + x*CASE_SIZE,DY + y*CASE_SIZE,CASE_SIZE,CASE_SIZE};
+    SDL_Rect rect = {DX + x*CASE_SIZE/map_scale,DY + y*CASE_SIZE/map_scale,CASE_SIZE/map_scale,CASE_SIZE/map_scale};
 
     //Affichage d'un mur
     if(tab[y][x]==1){
@@ -75,8 +75,8 @@ void Dessine_joueur(player *p,graphic *G)
 {
     /*dessine  le joueur sur la fenêtre sous la forme d'un carré */
 
-    SDL_Rect rect = {p->x -PLAYER/2,p->y -PLAYER/2,PLAYER/2,PLAYER};
-    SDL_Rect rect2 = {p->x,p->y -PLAYER/2,PLAYER/2,PLAYER};
+    SDL_Rect rect = {(p->x -PLAYER/2)/map_scale,(p->y -PLAYER/2)/map_scale,PLAYER/(2*map_scale),PLAYER/map_scale};
+    SDL_Rect rect2 = {p->x/map_scale,(p->y -PLAYER/2)/map_scale,PLAYER/(2*map_scale),PLAYER/map_scale};
 
     SDL_SetRenderDrawColor(G->renderer,255,215,0,255);
     SDL_RenderFillRect(G->renderer,&rect);
@@ -88,7 +88,8 @@ void Dessine_colonne(graphic *G,int pos,int he,int l)
 {
     /* Dessine une colonne de mur */
 
-    SDL_Rect Rect = {pos*LARGEUR + (N+1)*CASE_SIZE, CENTRE - he/2,l+1,he};
+    SDL_Rect Rect = {pos*LARGEUR, CENTRE - he/2,l+1,he};
+    // SDL_Rect Rect = {pos*LARGEUR + (N+1)*CASE_SIZE, CENTRE - he/2,l+1,he};
     SDL_RenderFillRect(G->renderer,&Rect);
 }
 

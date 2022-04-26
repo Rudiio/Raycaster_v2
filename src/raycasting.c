@@ -28,20 +28,23 @@ int input(player *p,int tab[][N])
                 switch(event.key.keysym.sym){
                     case SDLK_UP:
                         UP(p,tab);
-                        return 1;
+                        return PLAYER_MOVE;
 
                     case SDLK_DOWN:
                         DOWN(p,tab);
-                        return 1;
+                        return PLAYER_MOVE;
 
                     case SDLK_LEFT:
                         p->angle = angle_trigo(p->angle - DANGLE);
-                        return 1;
+                        return PLAYER_MOVE;
 
                     case SDLK_RIGHT:
                         p->angle = angle_trigo(p->angle + DANGLE);
-                        return 1;
-
+                        return PLAYER_MOVE;
+                    
+                    case SDLK_m:
+                        return MAP;
+                        
                     case SDLK_ESCAPE:
                         return -1;
 
@@ -100,32 +103,33 @@ int raydist(player *p,int tab[][N],int pos,float theta,graphic *G)
 {
     /* Calcule la distance du joueur au prochain mur dans une certaine direcction */
 
-    int cx, cy, dx,dy, i=0;
+    float cx, cy, dx,dy;
+    int i=0;
     float atan = -1/tan(theta);
 
     //Ligne horizontale
     //Détermination de l'intersection la plus proche
     if(theta < PI){
-        cy = (p->y/CASE_SIZE + 1) *CASE_SIZE;   //Vers le bas
-        cx = (p->y - cy)*atan + p->x;
+        cy = ((int)p->y/CASE_SIZE + 1) *CASE_SIZE;   //Vers le bas
+        cx = ((int)p->y - cy)*atan + p->x;
         dy = CASE_SIZE;
         dx = -dy*atan;
 
         //Recherche du mur
-        while(i<N && check_tab(cy/CASE_SIZE,cx/CASE_SIZE)  && tab[cy/CASE_SIZE][cx/CASE_SIZE]!=1 ){
+        while(i<N && check_tab((int)cy/CASE_SIZE,(int)cx/CASE_SIZE)  && tab[(int) cy/CASE_SIZE][(int)cx/CASE_SIZE]!=1 ){
             cy += dy ;
             cx += dx;
             i++;
         }
     }
     else if(PI < theta ){   //vers le haut
-        cy = (p->y/CASE_SIZE) *CASE_SIZE;
-        cx = (p->y - cy)*atan + p->x;
+        cy = ((int)p->y/CASE_SIZE) *CASE_SIZE;
+        cx = ((int)p->y - cy)*atan + p->x;
         dy = -CASE_SIZE;
         dx = -dy*atan;
 
         //Recherche du mur
-        while(i<N && check_tab(cy/CASE_SIZE -1,cx/CASE_SIZE) && tab[cy/CASE_SIZE -1][cx/CASE_SIZE]!=1){
+        while(i<N && check_tab((int)cy/CASE_SIZE -1,(int)cx/CASE_SIZE) && tab[(int)cy/CASE_SIZE -1][(int)cx/CASE_SIZE]!=1){
             cy += dy ;
             cx += dx;
             i++;
@@ -144,12 +148,12 @@ int raydist(player *p,int tab[][N],int pos,float theta,graphic *G)
     float ntan = -tan(theta);
     
     //Détermination de l'intersection la plus proche
-    if( val_abs(theta - PI/2) <0.05 || val_abs(theta-3*PI/2)<0.05){   //cas limites
+    if( val_abs(theta - PI/2) <0.00001 || val_abs(theta-3*PI/2)<0.00001){   //cas limites
         cx = p->x;
         cy = p->y;
 
         //Recherche du mur
-        while(i<N && check_tab(cy/CASE_SIZE,cx/CASE_SIZE) && tab[cy/CASE_SIZE][cx/CASE_SIZE]!=1){
+        while(i<N && check_tab((int)cy/CASE_SIZE,(int)cx/CASE_SIZE) && tab[(int)cy/CASE_SIZE][(int)cx/CASE_SIZE]!=1){
             cy += dy ;
             cx += dx;
             i++;
@@ -157,13 +161,13 @@ int raydist(player *p,int tab[][N],int pos,float theta,graphic *G)
     }
 
     else if((0< theta && theta < PI/2) || (3*PI/2 < theta && theta < 2*PI)){    //vers la droite
-        cx = (p->x/CASE_SIZE +1) *CASE_SIZE;
-        cy = (p->x - cx)*ntan + p->y;
+        cx = ((int)p->x/CASE_SIZE +1) *CASE_SIZE;
+        cy = ((int)p->x - cx)*ntan + p->y;
         dx = CASE_SIZE;
         dy = -dx*ntan;
 
         //Recherche du mur
-        while(i<N && check_tab(cy/CASE_SIZE,cx/CASE_SIZE) && tab[cy/CASE_SIZE][cx/CASE_SIZE]!=1){
+        while(i<N && check_tab((int)cy/CASE_SIZE,cx/CASE_SIZE) && tab[(int)cy/CASE_SIZE][(int)cx/CASE_SIZE]!=1){
             
             cy += dy ;
             cx += dx;
@@ -173,13 +177,13 @@ int raydist(player *p,int tab[][N],int pos,float theta,graphic *G)
     }
 
     else if(theta > PI/2 && theta < 3*PI/2){    //vers la gauche
-        cx = (p->x/CASE_SIZE) *CASE_SIZE;
-        cy = (p->x - cx)*ntan + p->y;
+        cx = ((int)p->x/CASE_SIZE) *CASE_SIZE;
+        cy = ((int)p->x - cx)*ntan + p->y;
         dx = -CASE_SIZE;
         dy = -dx*ntan;
 
         //Recherche du mur
-        while(i<N && check_tab(cy/CASE_SIZE,cx/CASE_SIZE-1) && tab[cy/CASE_SIZE][cx/CASE_SIZE-1]!=1){
+        while(i<N && check_tab((int)cy/CASE_SIZE,(int)cx/CASE_SIZE-1) && tab[(int)cy/CASE_SIZE][(int)cx/CASE_SIZE-1]!=1){
             cy += dy ;
             cx += dx;
             i++;
@@ -195,8 +199,8 @@ int raydist(player *p,int tab[][N],int pos,float theta,graphic *G)
     //On renvoie la distance la plus courte
     if(rh < rv){    //distance horizontale
 
-        SDL_SetRenderDrawColor(G->renderer, 255*0.7,0 , 0, 255); 
-        SDL_RenderDrawLine(G->renderer,p->x,p->y,hx,hy);
+        SDL_SetRenderDrawColor(G->renderer, 0,255*0.5, 0, 255);     
+        // SDL_RenderDrawLine(G->renderer,p->x,p->y,hx,hy);         //Affichage des rayons
         
         rh *= cos(angle_trigo(theta -p->angle + PI/16));    //Correction du fisheye
         he = HM*DE/rh;
@@ -206,10 +210,12 @@ int raydist(player *p,int tab[][N],int pos,float theta,graphic *G)
     }
     
     //distance verticale
-    SDL_SetRenderDrawColor(G->renderer, 255*0.9,0 , 0, 255); 
-    SDL_RenderDrawLine(G->renderer,p->x,p->y,cx,cy);
 
-    rv *= cos(angle_trigo(theta -p->angle + PI/16));   //Correction du fisheye
+    SDL_SetRenderDrawColor(G->renderer, 0,200, 0, 255); 
+
+    // SDL_RenderDrawLine(G->renderer,p->x,p->y,cx,cy);     //Affichage des rayons
+    
+    rv *= cos(angle_trigo(theta - p->angle + PI/16));   //Correction du fisheye
     he = HM*DE/rv;
     l=LARGEUR;
 

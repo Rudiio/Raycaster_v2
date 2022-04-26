@@ -14,12 +14,14 @@
 #define DY 0
 #define N 10
 
-#define NRAYS 150       //Nombre de rayons
+#define NRAYS 200       //Nombre de rayons
+#define map_scale 2.5
 
 //Paramètres d'affichage
-#define HM N*64   //taille réelle du mur
-#define DE 64   //distance de l'écran
-#define LARGEUR (WIDTH - (N-1)*CASE_SIZE)/NRAYS
+#define HM (N+2)*64   //taille réelle du mur
+#define DE 70   //distance de l'écran
+#define LARGEUR WIDTH /NRAYS
+// #define LARGEUR (WIDTH - (N-1)*CASE_SIZE)/NRAYS
 #define CENTRE N*CASE_SIZE/2
 
 //SDL graphics structure

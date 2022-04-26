@@ -3,18 +3,29 @@
 
 /*----------------------- CONSTANTES -----------------------*/
 
+//Pour le joueur
 #define PLAYER 20
 #define MV 10
-#define DANGLE 2*PI/30
+#define DANGLE 0.1//2*PI/30
+
+//Pour les events
+#define PLAYER_MOVE 1
+#define MAP 2
+
+
+
 
 //player structure
 typedef struct Player{
-    int x;
-    int y;
+    float x;
+    float y;
     float angle;
 }player;
 
-
+//Event structure
+typedef struct Event{
+    int map;
+}event;
 
 
 

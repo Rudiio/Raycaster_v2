@@ -11,7 +11,7 @@
 
 //Paramètres angulaires
 #define PI 3.14
-#define FOV PI/2        //Field of view
+#define FOV 50*PI/180        //Field of view
 
 
 /* ------------------ Protoypes des fonctions -------------------*/
