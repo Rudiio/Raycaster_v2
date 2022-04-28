@@ -4,16 +4,6 @@
 #include "Graphic.h"
 #include "player.h"
 
-/*----------------------- CONSTANTES -----------------------*/
-
-//Taille de la map
-#define CASE_SIZE 64
-
-//Paramètres angulaires
-#define PI 3.14
-#define FOV 50*PI/180        //Field of view
-
-
 /* ------------------ Protoypes des fonctions -------------------*/
 
 //Gestion du joueur
@@ -23,14 +13,15 @@ void DOWN(player *p,int tab[][N]);
 
 //Input du jeu
 int input(player *p,int tab[][N]);
+int input_v2(key *keys);
+void Player_movement(player *p,key *key,int tab[][N]);
 
 //Moteur du raycasting
 void raycasting(player *p,graphic *G, int tab[][N],int dist[],textures *T);
-int raydist(player *p,int tab[][N],int pos,float theta,graphic *G,textures *T);
+int raydist(player *p,int tab[][N],int pos,float theta,graphic *G,textures *T,int dist[]);
 
 //Fonctions Auxilliaires
 float angle_trigo(float angle);
-float val_abs(float val);
 int check_tab(int x,int y);
 
 #endif

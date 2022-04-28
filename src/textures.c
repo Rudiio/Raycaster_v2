@@ -21,8 +21,10 @@ textures *init_textures()
 
     textures *T= (textures*)malloc(sizeof(textures));
     T->Wall=NULL;
+    T->Wall_shade=NULL;
     T->Floor=NULL;
     T->ceiling=NULL;
+    T->sprite1=NULL;
 
     return T;
 }
@@ -62,6 +64,8 @@ void free_textures(textures *T)
     SDL_DestroyTexture(T->Wall);
     SDL_DestroyTexture(T->Floor);
     SDL_DestroyTexture(T->ceiling);
+    SDL_DestroyTexture(T->Wall_shade);
+    SDL_DestroyTexture(T->sprite1);
     free(T);
 
 }

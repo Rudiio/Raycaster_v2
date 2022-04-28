@@ -1,8 +1,8 @@
 CC =gcc
-CFLAGS = -std=c11 -Wall -ggdb3
+CFLAGS = -std=c11 -Wall -ggdb3 -fopenmp
 LIBFLAGS = -lSDL2 -lSDL2main -lm -lSDL2_image
 EXEC = raycaster
-OBJ = Game.o Graphic.o main.o raycasting.o textures.o
+OBJ = Game.o Graphic.o main.o raycasting.o textures.o Entity.o
 
 .Phony : $(OBJ) $(EXEC) mvo clean 
 
@@ -18,6 +18,9 @@ raycasting.o : src/raycasting.c src/raycasting.h
 	$(CC) $(CFLAGS)  -c $< $(LIBFLAGS)
 
 textures.o : src/textures.c src/textures.h
+	$(CC) $(CFLAGS)  -c $< $(LIBFLAGS)
+
+Entity.o : src/Entity.c src/Entity.h
 	$(CC) $(CFLAGS)  -c $< $(LIBFLAGS)
 
 main.o : src/main.c

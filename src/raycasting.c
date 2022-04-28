@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <SDL2/SDL.h>
+#include <omp.h>
 
 #include "raycasting.h"
 
@@ -49,17 +50,89 @@ int input(player *p,int tab[][N])
                         return -1;
 
                     
-                }
+                } 
         }
     }
     return 0;
 }
 
+int input_v2(key *keys)
+{
+    /* Vérifie si un bouton est préssé */
+    SDL_Event event;
+
+    while(SDL_PollEvent(&event)){
+        switch(event.type){
+            case SDL_QUIT :
+                return -1;
+
+            case SDL_KEYDOWN:
+                switch(event.key.keysym.sym){
+                    case SDLK_UP:
+                        keys->up=1;
+                        return PLAYER_MOVE;
+
+                    case SDLK_DOWN:
+                        keys->down=1;
+                        return PLAYER_MOVE;
+
+                    case SDLK_LEFT:
+                        keys->left=1;
+                        return PLAYER_MOVE;
+
+                    case SDLK_RIGHT:
+                        keys->right=1;
+                        return PLAYER_MOVE;
+                    
+                    case SDLK_m:
+                        return MAP;
+                        
+                    case SDLK_ESCAPE:
+                        return -1;
+                }
+            case SDL_KEYUP:
+                switch(event.key.keysym.sym){
+                    case SDLK_UP:
+                        keys->up=0;
+                        return PLAYER_MOVE;
+
+                    case SDLK_DOWN:
+                        keys->down=0;
+                        return PLAYER_MOVE;
+
+                    case SDLK_LEFT:
+                        keys->left=0;
+                        return PLAYER_MOVE;
+
+                    case SDLK_RIGHT:
+                        keys->right=0;
+                        return PLAYER_MOVE;
+                } 
+                    
+        }
+    }
+    return 0;
+}
+
+void Player_movement(player *p,key *key,int tab[][N])
+{
+    /* gère les mouvements du joueur */
+    if(key->up)
+        UP(p,tab);
+    if(key->down)
+        DOWN(p,tab);
+    if(key->left)
+        p->angle = angle_trigo(p->angle - DANGLE);
+    if(key->right)
+        p->angle = angle_trigo(p->angle + DANGLE);
+
+}
+
 void UP(player *p,int tab[][N])
 {
     /* Fait avancer le joueur dans sa direction actuelle */
-    int tx=p->x +MV*cos(p->angle);
-    int ty=p->y +MV*sin(p->angle);
+    float tx=p->x +MV*cos(p->angle);
+    float ty=p->y +MV*sin(p->angle);
     int x=(int)(tx/CASE_SIZE);
     int y=(int)(ty/CASE_SIZE);
 
@@ -72,8 +145,8 @@ void UP(player *p,int tab[][N])
 void DOWN(player *p,int tab[][N])
 {
     /* Fait reculer le joueur dans sa direction actuelle */
-    int tx=p->x -MV*cos(p->angle);
-    int ty=p->y -MV*sin(p->angle);
+    float tx=p->x -MV*cos(p->angle);
+    float ty=p->y -MV*sin(p->angle);
     int x=(int)(tx/CASE_SIZE);
     int y=(int)(ty/CASE_SIZE);
 
@@ -92,14 +165,15 @@ void raycasting(player *p,graphic *G, int tab[][N],int dist[],textures *T)
     float d_angle = FOV/NRAYS;        //variation d'angle
     float theta = angle_trigo(p->angle - FOV/2);   //angle de direction du rayon
     
+    #pragma omp parallel for 
     for(int i=0;i<NRAYS;i++){
         theta = angle_trigo(theta+d_angle); 
-        int d = raydist(p,tab,i,theta,G,T);     //Calcule de la distance et dessine les murs
+        int d = raydist(p,tab,i,theta,G,T,dist);     //Calcule de la distance et dessine les murs
         dist[i] = d;
     }
 }
 
-int raydist(player *p,int tab[][N],int pos,float theta,graphic *G,textures *T)
+int raydist(player *p,int tab[][N],int pos,float theta,graphic *G,textures *T,int dist[])
 {
     /* Calcule la distance du joueur au prochain mur dans une certaine direcction */
 
@@ -202,8 +276,15 @@ int raydist(player *p,int tab[][N],int pos,float theta,graphic *G,textures *T)
     //On renvoie la distance la plus courte
     if(rh < rv){    //distance horizontale
 
+        //harmonisation des coins
+        // if(pos!=0){
+        //     if(rh - dist[pos-1]>=CASE_SIZE){
+        //         rh = dist[pos]-1;
+        //     }
+        // }
+
         SDL_SetRenderDrawColor(G->renderer, 0,255*0.5, 0, 255);     
-        // SDL_RenderDrawLine(G->renderer,p->x,p->y,hx,hy);         //Affichage des rayons
+        // SDL_RenderDrawLine(G->renderer,p->x/map_scale,p->y/map_scale,hx/map_scale,hy/map_scale);         //Affichage des rayons
 
 
         rh *= cos(angle_trigo(theta -p->angle + PI/16));    //Correction du fisheye
@@ -218,14 +299,26 @@ int raydist(player *p,int tab[][N],int pos,float theta,graphic *G,textures *T)
         decalage =(int) x%CASE_SIZE;
 
         // Dessine_colonne(G,pos,he,l);     //sans texture
-        Dessine_colonne_texture(G,T,decalage,pos,he,l); //Avec texture
+        Dessine_colonne_texture(G,T,decalage,pos,he,l,0); //Avec texture
+
+        //texturation du sol
+        // Dessine_sol_texture(G,T,p,LARGEUR*pos,CENTRE + he/2 +1,theta);
+
         return rh;  
     }
     
     //distance verticale
+
+    //harmonisation des coins
+    // if(pos!=0){
+    //     if(val_abs(rv - dist[pos-1])>=2*CASE_SIZE){
+    //         rv = dist[pos-1]-1;
+    //     }
+    // }
+
     SDL_SetRenderDrawColor(G->renderer, 0,200, 0, 255); 
 
-    // SDL_RenderDrawLine(G->renderer,p->x,p->y,cx,cy);     //Affichage des rayons
+    // SDL_RenderDrawLine(G->renderer,p->x/map_scale,p->y/map_scale,cx/map_scale,cy/map_scale);     //Affichage des rayons
 
 
     rv *= cos(angle_trigo(theta - p->angle + PI/16));   //Correction du fisheye
@@ -240,7 +333,11 @@ int raydist(player *p,int tab[][N],int pos,float theta,graphic *G,textures *T)
     decalage =(int) y%CASE_SIZE;
 
     // Dessine_colonne(G,pos,he,l); //Sans texture
-    Dessine_colonne_texture(G,T,decalage,pos,he,l); //avec texture
+    Dessine_colonne_texture(G,T,decalage,pos,he,l,1); //avec texture
+
+    //texturation du sol
+    // Dessine_sol_texture(G,T,p,LARGEUR*pos,CENTRE + he/2,theta);
+
     return rv;
 }
 
@@ -255,14 +352,6 @@ float angle_trigo(float angle)
         return angle -2*PI;
     
     return angle;
-}
-
-float val_abs(float val)
-{
-    /* Fonction valeur absolue pour les flottants*/
-    if(val < 0)
-        return -val;
-    return val;
 }
 
 int check_tab(int x,int y)

@@ -58,7 +58,7 @@ void init(graphic *G)
 void affiche_case(int x,int y,int tab[][N],graphic *G)
 {
     /* Affiche un élément du décor en 2D sous la forme d'un carré */
-    SDL_Rect rect = {DX + x*CASE_SIZE/map_scale,DY + y*CASE_SIZE/map_scale,CASE_SIZE/map_scale+1,CASE_SIZE/map_scale+1};
+    SDL_Rect rect = {DX + x*CASE_SIZE/(map_scale),DY + y*CASE_SIZE/(map_scale),CASE_SIZE/(map_scale)+1,CASE_SIZE/(map_scale)+1};
 
     //Affichage d'un mur
     if(tab[y][x]==1){
@@ -81,13 +81,13 @@ void Dessine_joueur(player *p,graphic *G)
 {
     /*dessine  le joueur sur la fenêtre sous la forme d'un carré */
 
-    SDL_Rect rect = {(p->x -PLAYER/2)/map_scale,(p->y -PLAYER/2)/map_scale,PLAYER/(2*map_scale),PLAYER/map_scale};
-    SDL_Rect rect2 = {p->x/map_scale,(p->y -PLAYER/2)/map_scale,PLAYER/(2*map_scale),PLAYER/map_scale};
+    SDL_Rect rect = {(p->x -PLAYER/2)/(map_scale),(p->y -PLAYER/2)/(map_scale),PLAYER/(2*map_scale),PLAYER/(map_scale)};
+    SDL_Rect rect2 = {p->x/(map_scale),(p->y -PLAYER/2)/(map_scale),PLAYER/(2*map_scale),PLAYER/(map_scale)};
 
     SDL_SetRenderDrawColor(G->renderer,255,215,0,255);
     SDL_RenderFillRect(G->renderer,&rect);
     SDL_RenderFillRect(G->renderer,&rect2);
-    SDL_RenderDrawLine(G->renderer,(int)p->x/map_scale,(int)p->y/map_scale,(int)(50*cos(p->angle)+ p->x)/map_scale,(int)(50*sin(p->angle) + p->y)/map_scale);
+    SDL_RenderDrawLine(G->renderer,(int)p->x/(map_scale),(int)p->y/(map_scale),(int)(50*cos(p->angle)+ p->x)/(map_scale),(int)(50*sin(p->angle) + p->y)/(map_scale));
 
 }
 
@@ -100,14 +100,103 @@ void Dessine_colonne(graphic *G,int pos,int he,int l)
     SDL_RenderFillRect(G->renderer,&Rect);
 }
 
-void Dessine_colonne_texture(graphic *G,textures* T,int decalage,int pos,int he,int l)
+void Dessine_colonne_texture(graphic *G,textures* T,int decalage,int pos,int he,int l,int mur)
 {
     /* Dessine une colonne de mur texturée */
     // int large = l;
     // printf("decalage = %d\n",large*large/CASE_SIZE);
-    SDL_Rect On_texture = {decalage*l/Texture_scale,0,l/Texture_scale,CASE_SIZE };
-    SDL_Rect On_render = {pos*l, CENTRE - he/2,l+1,he};
-    SDL_RenderCopy(G->renderer, T->Wall,&On_texture, &On_render);
+    if(mur){
+        SDL_Rect On_texture = {decalage*l/Texture_scale,0,l/Texture_scale,CASE_SIZE };
+        SDL_Rect On_render = {pos*l, CENTRE - he/2,l,he};
+        SDL_RenderCopy(G->renderer, T->Wall_shade,&On_texture, &On_render);
+    }
+    else{
+        SDL_Rect On_texture = {decalage*l/Texture_scale,0,l/Texture_scale,CASE_SIZE };
+        SDL_Rect On_render = {pos*l, CENTRE - he/2,l+2,he};
+        SDL_RenderCopy(G->renderer, T->Wall,&On_texture, &On_render);
+    }
+}
+
+void Dessine_sol_texture(graphic *G,textures* T,player *p,int proj_x,int proj_y,float theta)
+{
+    /*Dessine les textures du sol */
+
+    #pragma omp parallel for
+    for(int i=(int)proj_y;i<HEIGTH;i++){
+
+        float r = HM/2 - i ;
+        float ds = HM/2*DE/r;
+        float beta = theta - p->angle;
+        float d = ds/cos(beta);
+
+        float fx = p->x + cos(theta)*d;
+        float fy =p->y + sin(theta)*d ;
+
+        // printf("px = %d py = %d \n",(int)fx % CASE_SIZE,(int)fy % CASE_SIZE);
+        
+        //Affichage du pixel
+        SDL_Rect On_texture = {(int)fx %CASE_SIZE,(int)fy % CASE_SIZE,1,1};
+        SDL_Rect On_render = {(int)proj_x,i,2,2};
+        SDL_RenderCopy(G->renderer, T->Floor,&On_texture, &On_render);
+    }
+}
+
+void background(graphic *G)
+{
+    /*Affiche le ciel et le le sol de couleurs différentes */
+    //déclaration des variables
+    SDL_Rect rect1={0,0,WIDTH,CENTRE};
+    SDL_Rect rect2={0,CENTRE,WIDTH,HEIGTH};
+
+    //On affiche le ciel
+    SDL_SetRenderDrawColor(G->renderer, 135, 206, 235, 255); //en bleu
+    SDL_RenderFillRect(G->renderer,&rect1);
+    
+    //On affiche le ciel
+    SDL_SetRenderDrawColor(G->renderer, 128, 128, 128, 255); //en bleu
+    SDL_RenderFillRect(G->renderer,&rect2);
+
+    // int number_of_row = 10;
+    // int x = 0;
+    // int y = HEIGTH;
+
+    // for(int i=0;i<number_of_row;i++){
+    //     SDL_Rect rect2={x,y,WIDTH,(HEIGTH-CENTRE)/number_of_row};
+
+    //     //On affiche le sol
+    //     SDL_SetRenderDrawColor(G->renderer, 192 -5*i, 192 -5*i, 192 -5*i, 255); //en bleu
+    //     SDL_RenderFillRect(G->renderer,&rect2);
+    //     y-= (HEIGTH-CENTRE)/number_of_row;
+    // }
+
+
+}
+
+/* ----------------------- SPRITES --------------------------------------------*/
+
+void Dessine_sprite(entity *en,player *p,graphic *G,int depht[])
+{
+    /*Dessine un sprite à l'écran */
+
+    //On va vérifier si le sprite est visible
+    float dx = en->x - p->x;
+    float dy = en->y - p->y;
+    float cs = cos(2*PI - p->angle);
+    float sn = sin(2*PI - p->angle);
+
+    float a = cs*dy +sn*dx;
+    float b = dx*cs-dy*sn;
+
+    dx = a;
+    dy = b;
+
+    dx= (dx*50/dy) + WIDTH/2;
+    dy= (en->z*50/dy) +3*HEIGTH/4;
+
+    printf("dx=%d dy =%d \n",(int)dx,(int)dy);
+    SDL_Rect rect={dx,dy,5,5};
+    SDL_SetRenderDrawColor(G->renderer,0,0,255,0);
+    SDL_RenderFillRect(G->renderer,&rect);
 }
 
 /* -----------------------RAFFRAICHISSEMENT DE L'AFFICHAGE -------------------- */
@@ -137,24 +226,44 @@ void Free_graphic(graphic *G)
     free(G);
 }
 
+/* -------------------------------- CHARGEMENT DES TEXTURES ----------------------------------- */
 
 int charge_textures(textures *T,graphic *G)
 {
     /* Charge les textures du jeu */
 
-    //Pour les murs
+    //Pour les murs horizontaux
     T->Wall = IMG_LoadTexture(G->renderer,"./textures/Wall.png");
     if(T->Wall==NULL){
         SDL_Log("ERREUR: Creation de tmp echouee > %s\n",SDL_GetError());
 	    exit(EXIT_FAILURE);
     }   
 
+    //Pour les murs verticaux
+    T->Wall_shade = IMG_LoadTexture(G->renderer,"./textures/Wall.png");
+    if(T->Wall_shade==NULL){
+        SDL_Log("ERREUR: Creation de tmp echouee > %s\n",SDL_GetError());
+	    exit(EXIT_FAILURE);
+    }   
+
+    if(SDL_SetTextureColorMod(T->Wall_shade,175,175,175)<0){
+        SDL_Log("ERREUR: Shading de la texture %s\n",SDL_GetError());
+	    exit(EXIT_FAILURE);
+    }
+
     // Pour le sol
-    // T->Floor = IMG_LoadTexture(G->renderer,"../textures/Floor.png");
-    // if(!T->Floor){
-    //     printf("Erreur lors du chargement de la texture du sol\n");
-    //     return 0;
-    // }
+    T->Floor = IMG_LoadTexture(G->renderer,"./textures/floor.png");
+    if(!T->Floor){
+        printf("Erreur lors du chargement de la texture du sol\n");
+        return 0;
+    }
+
+    // Pour le sol
+    T->sprite1 = IMG_LoadTexture(G->renderer,"./textures/pikachu.png");
+    if(!T->Floor){
+        printf("Erreur lors du chargement du sprite\n");
+        return 0;
+    }
 
     // //pour le plafond
     // T->ceiling = IMG_LoadTexture(G->renderer,"../textures/ceiling.png");
@@ -164,4 +273,15 @@ int charge_textures(textures *T,graphic *G)
     // }
     
     return 1;
+}
+
+
+/* -------------------------------- MATHS AUX ----------------------------------- */
+
+float val_abs(float val)
+{
+    /* Fonction valeur absolue pour les flottants*/
+    if(val < 0)
+        return -val;
+    return val;
 }

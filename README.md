@@ -16,10 +16,11 @@ Il s'agit d'une évolution de mon [premier moteur de raycasting](https://github.
 - [x] Afficher l'environnement 3D
 - [x] Gérer la minimap
 - [x] Texturer les murs
+- [x] Améliorer les mouvements
 - [ ] Textures le sol
 - [ ] Texturer le plafond
 - [ ] Afficher des sprites
-- [ ] Créer une nouvelle map
+- [x] Créer une nouvelle map
  
 
 ## Dependencies
@@ -43,6 +44,13 @@ make
 
 ## Avancée du projet<br>
 
+Le projet permet d'afficher l'environnement 3d avec une précision correcte. Cependant, il y  a un soucis au niveau des coins qui est à corriger.
+Le moteur de jeu supporte actuellement les textures sur les murs, il suffit que remplacer l'image ///textures/Wall.png par une image 64*64.
+La gestion des mouvements a été améliorée et est fluide.
+La  texturation des sols a été en partie implémentée mais le floor casting ralentit trop le programme, donc cette partie a été mise de coté.
+La gestion des sprites à été initiée, mais le manque d'information à ce sujet a freiner sa mise en place.
+Un générateur de carte aléatoire basique a été implémenté mais il pourrait facielement être amélioré.
+
 ### Sans texture
 ![actual_state](./states//actual_state.png)
 
@@ -61,3 +69,6 @@ make
 ## A corriger
 
 - Erreurs valgrind lors de l'affichage de la mini-map (semble provenir de la modification du rendu) 
+- Problème du raycasting au niveau des coins
+- Ralentissements du floorcasting
+- Rajout des sprites
