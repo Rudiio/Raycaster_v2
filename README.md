@@ -73,7 +73,7 @@ Un générateur de carte aléatoire basique a été implémenté mais il pourrai
 - Ralentissements du floorcasting
 - Rajout des sprites
 
-## ressources 
+## Ressources 
 
 - [doom-wolfenstein-raycasting](https://guy-grave.developpez.com/tutoriels/jeux/doom-wolfenstein-raycasting/)
 
