@@ -72,3 +72,13 @@ Un générateur de carte aléatoire basique a été implémenté mais il pourrai
 - Problème du raycasting au niveau des coins
 - Ralentissements du floorcasting
 - Rajout des sprites
+
+## ressources 
+
+- [doom-wolfenstein-raycasting](https://guy-grave.developpez.com/tutoriels/jeux/doom-wolfenstein-raycasting/)
+
+- [Lodev](https://lodev.org/cgtutor/raycasting.html)
+
+- [permadi](https://permadi.com/1996/05/ray-casting-tutorial-table-of-contents/)
+
+- [Make your own raycaster, 3Dsage](https://www.youtube.com/watch?v=gYRrGTC7GtA&t=0s) 
