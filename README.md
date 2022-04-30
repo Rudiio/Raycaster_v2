@@ -78,7 +78,7 @@ Les fps sont affichés en haut à droite de l'écran, mais la mise à jour de l'
 - Ralentissements du floorcasting
 - Rajout des sprites
 
-## ressources 
+## Ressources 
 
 - [doom-wolfenstein-raycasting](https://guy-grave.developpez.com/tutoriels/jeux/doom-wolfenstein-raycasting/)
 
@@ -88,4 +88,4 @@ Les fps sont affichés en haut à droite de l'écran, mais la mise à jour de l'
 
 - [Make your own raycaster, 3Dsage](https://www.youtube.com/watch?v=gYRrGTC7GtA&t=0s) 
 
-- [Tutoriel pour les jeux vidéos avec la SDL](https://thenumbat.github.io/cpp-course/sdl2/08/08.html#:~:text=Capping%20your%20FPS%20is%20quite,std%3A%3Achrono%20for%20more.))
+- [Tutoriel pour les jeux vidéos avec la SDL](https://thenumbat.github.io/cpp-course/sdl2/08/08.html#:~:text=Capping%20your%20FPS%20is%20quite,std%3A%3Achrono%20for%20more.)
