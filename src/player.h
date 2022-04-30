@@ -4,7 +4,7 @@
 /*----------------------- CONSTANTES -----------------------*/
 
 //Pour le joueur
-#define PLAYER 20
+#define PLAYER 20 * N/10
 #define MV 5
 #define DANGLE 0.1//2*PI/30
 

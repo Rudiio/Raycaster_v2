@@ -93,13 +93,13 @@ void Dessine_joueur(player *p,graphic *G)
 {
     /*dessine  le joueur sur la fenêtre sous la forme d'un carré */
 
-    SDL_Rect rect = {(p->x -PLAYER/2)/(map_scale),(p->y -PLAYER/2)/(map_scale),PLAYER/(2*map_scale),PLAYER/(map_scale)};
+    SDL_Rect rect = {(p->x -PLAYER/2)/(map_scale),(p->y -PLAYER/2)/(map_scale),PLAYER/(2*map_scale)+1,PLAYER/(map_scale)};
     SDL_Rect rect2 = {p->x/(map_scale),(p->y -PLAYER/2)/(map_scale),PLAYER/(2*map_scale),PLAYER/(map_scale)};
 
     SDL_SetRenderDrawColor(G->renderer,0,215,0,255);
     SDL_RenderFillRect(G->renderer,&rect);
     SDL_RenderFillRect(G->renderer,&rect2);
-    SDL_RenderDrawLine(G->renderer,(int)p->x/(map_scale),(int)p->y/(map_scale),(int)(50*cos(p->angle)+ p->x)/(map_scale),(int)(50*sin(p->angle) + p->y)/(map_scale));
+    SDL_RenderDrawLine(G->renderer,(int)p->x/(map_scale),(int)p->y/(map_scale),(int)(PLAYER*cos(p->angle)+ p->x)/(map_scale),(int)(PLAYER*sin(p->angle) + p->y)/(map_scale));
 
 }
 

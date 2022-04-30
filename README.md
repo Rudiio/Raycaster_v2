@@ -54,6 +54,7 @@ La gestion des mouvements a été améliorée et est fluide.
 La  texturation des sols a été en partie implémentée mais le floor casting ralentit trop le programme, donc cette partie a été mise de coté.
 La gestion des sprites à été initiée, mais le manque d'information à ce sujet a freiner sa mise en place.
 Un générateur de carte aléatoire basique a été implémenté mais il pourrait facielement être amélioré.
+Les fps sont affichés en haut à droite de l'écran, mais la mise à jour de l'écriture est trop rapide. Les fps ont étés capés à 60;
 
 ### Sans texture
 ![actual_state](./states//actual_state.png)
