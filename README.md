@@ -20,7 +20,11 @@ Il s'agit d'une évolution de mon [premier moteur de raycasting](https://github.
 - [ ] Textures le sol
 - [ ] Texturer le plafond
 - [ ] Afficher des sprites
-- [x] Créer une nouvelle map
+- [x] Créer une nouvelle map aléatoire
+- [ ] Création aléatoire de labyrinthe ou chargement de map via .txt
+- [ ] Ajout du tableau de bord 
+- [ ] Ajout des portes et map des murs
+- [x] Afficher les fps
  
 
 ## Dependencies
@@ -33,7 +37,7 @@ L'extension SDL_image est utilisée pour gérer l'imporation des textures.
 Sous Linux : 
 
 ```
-sudo apt install libsdl2-2.0-0 libsdl2-gfx-1.0-0 libsdl2-image-2.0-0 libsdl2-mixer-2.0-0 libsdl2-net-2.0-0 libsdl2-ttf-2.0-0 libsdl2-dev libsdl2-image-dev
+sudo apt install libsdl2-2.0-0 libsdl2-gfx-1.0-0 libsdl2-image-2.0-0 libsdl2-mixer-2.0-0 libsdl2-net-2.0-0 libsdl2-ttf-2.0-0 libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
 ```
 
 ## Install 
@@ -82,3 +86,5 @@ Un générateur de carte aléatoire basique a été implémenté mais il pourrai
 - [permadi](https://permadi.com/1996/05/ray-casting-tutorial-table-of-contents/)
 
 - [Make your own raycaster, 3Dsage](https://www.youtube.com/watch?v=gYRrGTC7GtA&t=0s) 
+
+- [Tutoriel pour les jeux vidéos avec la SDL](https://thenumbat.github.io/cpp-course/sdl2/08/08.html#:~:text=Capping%20your%20FPS%20is%20quite,std%3A%3Achrono%20for%20more.))

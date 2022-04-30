@@ -18,6 +18,14 @@ graphic *init_graphic()
     return G;
 }
 
+void init_ttf()
+{
+    /* Initialise la bibliothèque SDL_ttf pour afficher du texte */
+    if (TTF_Init() == -1) {
+	printf("Error SDL2_ttf Initialization\n");
+    }
+}
+
 void init(graphic *G)
 {
     /*Initialise la SDL ainsi que la window et le renderer*/
@@ -39,7 +47,7 @@ void init(graphic *G)
 	}
 
     //Création du rendu
-	G->renderer= SDL_CreateRenderer(G->window,-1,SDL_RENDERER_ACCELERATED);
+	G->renderer= SDL_CreateRenderer(G->window,-1,SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
 
     //Vérification de la création du rendu
 	if(G->renderer==NULL){
@@ -65,6 +73,10 @@ void affiche_case(int x,int y,int tab[][N],graphic *G)
         SDL_SetRenderDrawColor(G->renderer,0,0,0,255);
         SDL_RenderFillRect(G->renderer,&rect);
     }
+    if(tab[y][x]==0){
+        SDL_SetRenderDrawColor(G->renderer,255,255,255,255);
+        SDL_RenderFillRect(G->renderer,&rect);
+    }
 }
 
 void affiche_map(int tab[][N],graphic *G)
@@ -84,7 +96,7 @@ void Dessine_joueur(player *p,graphic *G)
     SDL_Rect rect = {(p->x -PLAYER/2)/(map_scale),(p->y -PLAYER/2)/(map_scale),PLAYER/(2*map_scale),PLAYER/(map_scale)};
     SDL_Rect rect2 = {p->x/(map_scale),(p->y -PLAYER/2)/(map_scale),PLAYER/(2*map_scale),PLAYER/(map_scale)};
 
-    SDL_SetRenderDrawColor(G->renderer,255,215,0,255);
+    SDL_SetRenderDrawColor(G->renderer,0,215,0,255);
     SDL_RenderFillRect(G->renderer,&rect);
     SDL_RenderFillRect(G->renderer,&rect2);
     SDL_RenderDrawLine(G->renderer,(int)p->x/(map_scale),(int)p->y/(map_scale),(int)(50*cos(p->angle)+ p->x)/(map_scale),(int)(50*sin(p->angle) + p->y)/(map_scale));
@@ -275,6 +287,41 @@ int charge_textures(textures *T,graphic *G)
     return 1;
 }
 
+/*-------------------------------- TTFF$ -----------------------------------------------*/
+
+TTF_Font *charge_font(char * path,int size)
+{
+    /* Charge une font .ttf avec la taille de police size*/
+
+    TTF_Font *font = NULL;
+    font = TTF_OpenFont(path,size);
+    if(!font)
+    {
+        SDL_Log("ERREUR: Chargement font > %s\n",SDL_GetError());
+	    exit(EXIT_FAILURE);
+    }
+    return font;
+}
+
+void Diplay_fps(graphic *G,char *fps,TTF_Font *font)
+{
+    /* Affiche les FPS sur l'écran */
+
+    //Chargement du texte dans une surface
+    SDL_Color color = { 0, 0, 0 };
+    SDL_Surface * surface = TTF_RenderText_Solid(font,fps, color);
+
+    //Conversion de la surface en texture
+    SDL_Texture * texture = SDL_CreateTextureFromSurface(G->renderer, surface);
+
+    //affichage de la texture
+    SDL_Rect On_render = {WIDTH - 150, 0,100,100};
+    SDL_RenderCopy(G->renderer, texture,NULL, &On_render);
+
+    //Libération de la mémoire
+    SDL_DestroyTexture(texture);
+    SDL_FreeSurface(surface);
+}
 
 /* -------------------------------- MATHS AUX ----------------------------------- */
 

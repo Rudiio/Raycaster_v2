@@ -5,6 +5,7 @@
 #include <math.h>
 #include <time.h>
 #include <omp.h>
+#include <SDL2/SDL_ttf.h>
 
 #include "Graphic.h"
 #include "Game.h"
@@ -38,7 +39,7 @@ void map_generator(int map[][N])
     }
     int i=0;
 
-    while(i<N/2){
+    while(i<N){
         int x = rand()%N;
         int y = rand()%N;
 
@@ -50,7 +51,6 @@ void map_generator(int map[][N])
     }
 
 }
-
 
 event* init_event()
 {
@@ -97,6 +97,19 @@ void init_keys(key *k)
     k->right=0;
 }
 
+void Quit_game(entity* en,event *e,textures *T,graphic *G,TTF_Font *font)
+{
+    /* Libère la mémoire après avoir quitté le jeu */
+    free(en);
+    free(e);
+    free_textures(T);
+    Free_graphic(G);
+    TTF_CloseFont(font);
+    IMG_Quit();
+    TTF_Quit();
+    SDL_Quit();
+}
+
 void mainloop()
 {
     /* Boucle de jeu principale */
@@ -112,14 +125,18 @@ void mainloop()
     textures *T;
     entity *pikachu;
     key keys;
+    TTF_Font* font = NULL;
+    double nb_fps = 0;
 
     //Initialisations
     map_generator(map);
     G = init_graphic();
     init(G);
     init_image();
+    init_ttf();
     e=init_event();
     init_keys(&keys);
+    font = charge_font("./font/Atarian/SF_Atarian_System.ttf",25);
 
     //Structures
     init_player(&p);
@@ -147,18 +164,23 @@ void mainloop()
 
         event_handling(e,G,&p,map);
 
+        // ---------------------------- AFFICHAGE DES FPS ------------------- //
+        char fps[10];
+        sprintf(fps,"FPS : %d",(int)(nb_fps));
+        Diplay_fps(G,fps,font);
+
         //--------------------- MISE A JOUR DE L'AFFICHAGE ------------//
         Display(G);
-
         Uint64 end = SDL_GetPerformanceCounter();
         float elapsed = (end - start) / (float)SDL_GetPerformanceFrequency();
-        printf("Current fps = %f\n",1.0f/elapsed);
+
+        nb_fps =1.0f/elapsed;
+
+        // Cap to 60 FPS
+	    SDL_Delay(floor(16.666f - elapsed));
+
+        // printf("Current fps = %f\n",nb_fps);
     }
 
-    free(pikachu);
-    free(e);
-    free_textures(T);
-    Free_graphic(G);
-    IMG_Quit();
-    SDL_Quit();
+    Quit_game(pikachu,e,T,G,font);
 }

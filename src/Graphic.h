@@ -2,6 +2,7 @@
 #define GRAPHIC_H
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include "player.h"
 #include "textures.h"
 #include "Entity.h"
@@ -13,7 +14,7 @@
 #define CASE_SIZE 64
 #define DX 0
 #define DY 0
-#define N 20
+#define N 50
 
 #define NRAYS 500      //Nombre de rayons
 #define map_scale N/4
@@ -37,6 +38,7 @@ typedef struct Graphic{
 //Initialisations
 graphic *init_graphic();
 void init(graphic *G);
+void init_ttf();
 
 //Affichage
 void affiche_case(int x,int y,int tab[][N],graphic *G);
@@ -57,12 +59,15 @@ void Dessine_colonne_texture(graphic *G,textures* T,int decalage,int pos,int he,
 void Dessine_sol_texture(graphic *G,textures* T,player *p,int proj_x,int proj_y,float theta);
 void background(graphic *G);
 
-
 //sprites
 void Dessine_sprite(entity *en,player *p,graphic *G,int depht[]);
 
 //textures
 int charge_textures(textures *T,graphic *G);
+
+//TTF
+TTF_Font *charge_font(char * path,int size);
+void Diplay_fps(graphic *G,char *fps,TTF_Font *font);
 
 //Libération
 void Free_graphic(graphic *G);
